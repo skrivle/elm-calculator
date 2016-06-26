@@ -3,8 +3,14 @@ import String
 import List
 import Array
 
-type Operator =  Add | Subtract | Multiply
-type Token = TokenValue Float | TokenOperator String Int
+type Operator =  
+    Add 
+    | Subtract 
+    | Multiply
+
+type Token = 
+    TokenValue Float 
+    | TokenOperator String Int
 
 type alias Config = List ConfigItem
 
@@ -47,28 +53,17 @@ main =
         , div [] [text (calc "4 / 2")]
     ]
 
-calc : String -> String
-calc calculation = 
-    calculation
-        |> lexer 
-        |> calculator
-
-
-calculator : List Token -> String        
-calculator tokenList =
+calc : String -> String        
+calc string =
     let 
-        tokenArray = Array.fromList tokenList
-        
-        priorityStep curr memo =
-            calcPriority curr memo
-
+        tokenList = lexer string
         calcPriority priority list =
             list
                 |> List.foldl (processStep priority) (Array.fromList [])
                 |> Array.toList
     in
         priorities
-            |> List.foldl priorityStep tokenList
+            |> List.foldl calcPriority tokenList
             |> List.head
             |> Maybe.withDefault (TokenValue 0)
             |> tokenToInt
@@ -85,6 +80,7 @@ processStep priority curr memo =
         n1 = Array.get (lastIndex - 1) memo
             |> Maybe.withDefault (TokenValue 0)
             |> tokenToInt
+
         n2 = tokenToInt curr
         operator = lastItem
     in
@@ -125,7 +121,7 @@ tokenize string =
 
 operatorStringToToken string =
     let 
-        config = getOperationConfig string
+        config = operationConfig string
     in
         case config of
             Maybe.Just config ->
@@ -136,7 +132,7 @@ operatorStringToToken string =
 
 operate n1 n2 operator =
     let
-        config = getOperationConfig operator
+        config = operationConfig operator
     in 
         case config of
             Maybe.Just config ->
@@ -145,7 +141,7 @@ operate n1 n2 operator =
                 0
 
 
-getOperationConfig operator =
+operationConfig operator =
     let 
         findConfig curr memo =
             if curr.operator == operator then
