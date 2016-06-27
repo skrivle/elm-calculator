@@ -97,16 +97,13 @@ operatorStringToToken config string =
             Maybe.Nothing ->
                 Maybe.Nothing
 
+
 operationConfig : Config -> String -> Maybe ConfigItem  
 operationConfig config operator =
-    let 
-        findConfig curr memo =
-            if curr.operator == operator then
-                Maybe.Just curr
-            else
-                memo
-    in 
-        List.foldl findConfig Maybe.Nothing config
+    config
+        |> List.filter (\item -> item.operator == operator)
+        |> List.head
+
 
 priorities : Config -> List Int
 priorities config =
