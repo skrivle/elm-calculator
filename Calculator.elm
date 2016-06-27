@@ -3,21 +3,22 @@ module Calculator exposing (calc, Config)
 import String
 import List
 import Array
-
 import Utils
 
 type Token = 
     TokenValue Float 
-    | TokenOperator String Int (Float -> Float -> Float)
+    | TokenOperator 
+        String Int (Float -> Float -> Float)
 
-type alias Config = List ConfigItem
-
-type alias ConfigItem = 
+type alias Config = 
+    List ConfigItem
+    
+type alias ConfigItem =
     {
         operator : String
         , priority : Int
         , operation : Float -> Float -> Float
-    }
+    } 
 
 calc : Config -> String -> String        
 calc config string =
@@ -37,27 +38,27 @@ calc config string =
 
 
 processStep: Int -> Token -> Array.Array Token -> Array.Array Token
-processStep priority curr memo =
+processStep priority token list =
     let 
-        lastIndex = (Array.length memo) - 1
-        lastItem = (Array.get lastIndex memo)
+        lastIndex = (Array.length list) - 1
+        lastItem = (Array.get lastIndex list)
             |> Maybe.withDefault (TokenValue 0)
             
-        n1 = Array.get (lastIndex - 1) memo
+        n1 = Array.get (lastIndex - 1) list
             |> Maybe.withDefault (TokenValue 0)
             |> tokenToInt
 
-        n2 = tokenToInt curr
+        n2 = tokenToInt token
         operator = lastItem
     in
         case lastItem of
             TokenOperator operator operatorPriority operation ->
                 if operatorPriority == priority then
-                    Array.push (TokenValue (operation n1 n2)) (Array.slice 0 -2 memo)
+                    Array.push (TokenValue (operation n1 n2)) (Array.slice 0 -2 list)
                 else 
-                    Array.push curr memo
+                    Array.push token list
             TokenValue value ->
-                Array.push curr memo 
+                Array.push token list 
 
 
 tokenToInt : Token -> Float
@@ -85,6 +86,7 @@ tokenize config string =
         Maybe.withDefault (TokenValue number) token
 
 
+operatorStringToToken : Config -> String -> Maybe Token
 operatorStringToToken config string =
     let 
         configItem = operationConfig config string
@@ -95,7 +97,7 @@ operatorStringToToken config string =
             Maybe.Nothing ->
                 Maybe.Nothing
 
-
+operationConfig : Config -> String -> Maybe ConfigItem  
 operationConfig config operator =
     let 
         findConfig curr memo =
@@ -106,6 +108,7 @@ operationConfig config operator =
     in 
         List.foldl findConfig Maybe.Nothing config
 
+priorities : Config -> List Int
 priorities config =
     config    
         |> List.map (\config -> config.priority)
