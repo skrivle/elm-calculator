@@ -10,7 +10,9 @@ import Calculator.Lexer exposing (Token(..), lexer, tokenToInt)
 calc : Config -> String -> String        
 calc config string =
     let 
-        tokenList = (lexer config) string
+        tokenList = 
+            (lexer config) string
+            
         calcPriority priority list =
             list
                 |> List.foldl (processToken priority) (Array.fromList [])
@@ -27,16 +29,22 @@ calc config string =
 processToken: Int -> Token -> Array.Array Token -> Array.Array Token
 processToken priority token list =
     let 
-        lastIndex = (Array.length list) - 1
-        lastItem = (Array.get lastIndex list)
-            |> Maybe.withDefault (TokenValue 0)
+        lastIndex = 
+            (Array.length list) - 1
+        lastItem = 
+            (Array.get lastIndex list)
+                |> Maybe.withDefault (TokenValue 0)
             
-        n1 = Array.get (lastIndex - 1) list
-            |> Maybe.withDefault (TokenValue 0)
-            |> tokenToInt
+        n1 = 
+            Array.get (lastIndex - 1) list
+                |> Maybe.withDefault (TokenValue 0)
+                |> tokenToInt
 
-        n2 = tokenToInt token
-        operator = lastItem
+        n2 = 
+            tokenToInt token
+
+        operator = 
+            lastItem
     in
         case lastItem of
             TokenOperator operator operatorPriority operation ->

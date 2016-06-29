@@ -22,8 +22,10 @@ lexer config string =
 tokenize : Config -> String -> Token
 tokenize config string = 
     let
-        token = operatorStringToToken config string
-        number = Result.withDefault 0 (String.toFloat string)  
+        token = 
+            operatorStringToToken config string
+        number = 
+            Result.withDefault 0 (String.toFloat string)  
     in
         Maybe.withDefault (TokenValue number) token
 
@@ -31,7 +33,8 @@ tokenize config string =
 operatorStringToToken : Config -> String -> Maybe Token
 operatorStringToToken config string =
     let 
-        configItem = operationConfig config string
+        configItem = 
+            operationConfig config string
     in
         case configItem of
             Maybe.Just config ->
