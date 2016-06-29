@@ -2,8 +2,8 @@ import Html exposing (Html, div, button, input, text)
 import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Calculator.Calculator as Calculator
 
-import Calculator
 
 type Msg =
     InputChange String
@@ -14,6 +14,7 @@ type alias Model =
         input : String
         , output : String
     }
+    
 
 main : Program Never
 main =
@@ -24,12 +25,14 @@ main =
             , update = update
         } 
 
+
 model : Model
 model =
     {
         input = ""
         , output = ""
     }
+
 
 view : Model -> Html Msg
 view model =
@@ -40,6 +43,7 @@ view model =
             text model.output
         ]
     ]
+
 
 update : Msg -> Model -> Model
 update msg model =
