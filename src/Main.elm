@@ -1,80 +1,76 @@
+module Main exposing (..)
+
 import Html exposing (Html, div, button, input, text)
-import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Calculator.Calculator as Calculator
 
 
-type Msg =
-    InputChange String
+type Msg
+    = InputChange String
     | Calculate
 
-type alias Model =
-    {
-        input : String
-        , output : String
-    }
-    
 
-main : Program Never
+type alias Model =
+    { input : String
+    , output : String
+    }
+
+
+main : Program Never Model Msg
 main =
-    App.beginnerProgram 
-        {
-            model = model
-            , view = view
-            , update = update
-        } 
+    Html.beginnerProgram
+        { model = model
+        , view = view
+        , update = update
+        }
 
 
 model : Model
 model =
-    {
-        input = ""
-        , output = ""
+    { input = ""
+    , output = ""
     }
 
 
 view : Model -> Html Msg
 view model =
-    div [] [
-        input [onInput InputChange, value model.input] [],
-        button [onClick Calculate] [text "calculate"],
-        div [] [
-            text model.output
+    div []
+        [ input [ onInput InputChange, value model.input ] []
+        , button [ onClick Calculate ] [ text "calculate" ]
+        , div []
+            [ text model.output
+            ]
         ]
-    ]
 
 
 update : Msg -> Model -> Model
 update msg model =
-    case msg of 
+    case msg of
         InputChange input ->
-            {model | input = input}
+            { model | input = input }
+
         Calculate ->
-            {model | output = calc model.input}
+            { model | output = calc model.input }
 
 
-calc : String -> String 
-calc = Calculator.calc
-    [
-        {
-            operator = "+"
-            , priority = 0
-            , operation = (\n1 n2 -> n1 + n2)
-        },
-        {
-            operator = "-"
-            , priority = 0
-            , operation = (\n1 n2 -> n1 - n2)
-        },
-        {
-            operator = "*"
-            , priority = 1
-            , operation = (\n1 n2 -> n1 * n2)
-        },
-        {
-            operator = "/"
-            , priority = 1
-            , operation = (\n1 n2 -> n1 / n2)
-        }
-    ]
+calc : String -> String
+calc =
+    Calculator.calc
+        [ { operator = "+"
+          , priority = 0
+          , operation = (\n1 n2 -> n1 + n2)
+          }
+        , { operator = "-"
+          , priority = 0
+          , operation = (\n1 n2 -> n1 - n2)
+          }
+        , { operator = "*"
+          , priority = 1
+          , operation = (\n1 n2 -> n1 * n2)
+          }
+        , { operator = "/"
+          , priority = 1
+          , operation = (\n1 n2 -> n1 / n2)
+          }
+        ]

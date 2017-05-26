@@ -7,58 +7,60 @@ import Calculator.Config exposing (Config)
 import Calculator.Lexer exposing (Token(..), lexer, tokenToInt)
 
 
-calc : Config -> String -> String        
+calc : Config -> String -> String
 calc config string =
-    let 
-        tokenList = 
+    let
+        tokenList =
             (lexer config) string
-            
+
         calcPriority priority list =
             list
                 |> List.foldl (processToken priority) (Array.fromList [])
                 |> Array.toList
     in
-        (priorities config) 
+        (priorities config)
             |> List.foldl calcPriority tokenList
             |> List.head
             |> Maybe.withDefault (TokenValue 0)
             |> tokenToInt
-            |> toString    
+            |> toString
 
 
-processToken: Int -> Token -> Array.Array Token -> Array.Array Token
+processToken : Int -> Token -> Array.Array Token -> Array.Array Token
 processToken priority token list =
-    let 
-        lastIndex = 
+    let
+        lastIndex =
             (Array.length list) - 1
-        lastItem = 
+
+        lastItem =
             (Array.get lastIndex list)
                 |> Maybe.withDefault (TokenValue 0)
-            
-        n1 = 
+
+        n1 =
             Array.get (lastIndex - 1) list
                 |> Maybe.withDefault (TokenValue 0)
                 |> tokenToInt
 
-        n2 = 
+        n2 =
             tokenToInt token
 
-        operator = 
+        operator =
             lastItem
     in
         case lastItem of
             TokenOperator operator operatorPriority operation ->
                 if operatorPriority == priority then
                     Array.push (TokenValue (operation n1 n2)) (Array.slice 0 -2 list)
-                else 
+                else
                     Array.push token list
+
             TokenValue value ->
-                Array.push token list 
+                Array.push token list
 
 
 priorities : Config -> List Int
 priorities config =
-    config    
+    config
         |> List.map (\config -> config.priority)
         |> Utils.unique
         |> List.sort
